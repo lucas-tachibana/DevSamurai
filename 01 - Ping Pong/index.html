@@ -71,9 +71,21 @@
             y: 100,
             w: line.w,
             h: 200,
-            
+            speed: 5,
+
             _move: function() {
-                this.y = ball.y;
+                if(this.y + this.h / 2 < ball.y + ball.r){
+                    this.y += this.speed;
+                } else {
+                    this.y -= this.speed;
+                }
+            },
+
+            speedDown: function() {
+                this.speed -= 1;
+            },
+            speedUp: function() {
+                this.speed += 2;
             },
             draw: function() {
                 canvasCtx.fillStyle = "#ffffff";
@@ -89,6 +101,7 @@
             y: 200,
             r: 20,
             speed: 5,
+            maxSpeed: 35,
             directionX: 1,
             directionY: 1,
 
@@ -120,12 +133,26 @@
             },
             _reverseX: function() {
                 this.directionX *= -1;
+                if(this.speed < this.maxSpeed) {
+                    this._speedUp(1);
+                }
             },
             _reverseY: function() {
                 this.directionY *= -1;
             },
 
+            _speedUp: function(value) {
+                this.speed += value;
+            },
+            _speedDown: function(value) {
+                this.speed -= value;
+            },
+
             _pointUp: function() {
+                if(this.speed < this.maxSpeed) {
+                    this._speedUp(2);
+                }
+                
                 this.x = field.w / 2;
                 this.y = field.h / 2;
             },
@@ -146,14 +173,17 @@
         }
 
         const score = {
-            human: 1,
-            computer: 2,
+            human: 0,
+            computer: 0,
 
             increaseHuman: function() {
                 this.human++;
+                rightPaddle.speedUp();
             },
             increaseComputer: function() {
                 this.computer++;
+                rightPaddle.speedDown();
+                ball._speedDown(ball.speed/3);
             },
             draw: function() {
                 canvasCtx.font = "bold 72px Arial";
